@@ -1,23 +1,23 @@
 import { Drink } from "../../src/drink";
 import { Order } from "../../src/order";
 
-export function aCoffee(): OrderBuilder {
-    return new OrderBuilder(Drink.Coffee);
+export function aCoffee(): OrderInfoBuilder {
+    return new OrderInfoBuilder(Drink.Coffee);
 };
 
-export function aTea(): OrderBuilder {
-    return new OrderBuilder(Drink.Tea);
+export function aTea(): OrderInfoBuilder {
+    return new OrderInfoBuilder(Drink.Tea);
 };
 
-export function aHotChocolate(): OrderBuilder {
-    return new OrderBuilder(Drink.Chocolate);
+export function aHotChocolate(): OrderInfoBuilder {
+    return new OrderInfoBuilder(Drink.Chocolate);
 };
 
-export function anOrangeJuice(): OrderBuilder {
-    return new OrderBuilder(Drink.OrangeJuice);
+export function anOrangeJuice(): OrderInfoBuilder {
+    return new OrderInfoBuilder(Drink.OrangeJuice);
 };
 
-class OrderBuilder {
+class OrderInfoBuilder {
     private readonly _selectedDrink: Drink;
     private _spoonsOfSugars: number;
     private _extraHot: boolean;
@@ -31,12 +31,12 @@ class OrderBuilder {
     make(): Order {
         return new Order(this._selectedDrink, this._extraHot, this._spoonsOfSugars);
     }
-    withSpoonsOfSugar(spoonsOfSugar: number): OrderBuilder {
+    withSpoonsOfSugar(spoonsOfSugar: number): OrderInfoBuilder {
         this._spoonsOfSugars = spoonsOfSugar;
         return this;
     }
 
-    extraHot(): OrderBuilder {
+    extraHot(): OrderInfoBuilder {
         this._extraHot = true;
         return this;
     }
