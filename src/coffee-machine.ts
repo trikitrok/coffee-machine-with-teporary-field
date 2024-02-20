@@ -4,11 +4,9 @@ import {OrderProcessing} from "./order-processing";
 
 export class CoffeeMachine {
     private orderProcessing: OrderProcessing;
-    private readonly drinkMakerDriver: DrinkMakerDriver;
 
     constructor(priceTable: Record<Drink, number>, drinkMakerDriver: DrinkMakerDriver) {
-        this.drinkMakerDriver = drinkMakerDriver;
-        this.orderProcessing = OrderProcessing.start(priceTable);
+        this.orderProcessing = OrderProcessing.start(priceTable, drinkMakerDriver);
     }
 
     selectCoffee(): void {
@@ -40,6 +38,6 @@ export class CoffeeMachine {
     }
 
     makeDrink(): void {
-        this.orderProcessing = this.orderProcessing.makeDrink(this.drinkMakerDriver);
+        this.orderProcessing = this.orderProcessing.placeOrder();
     }
 }

@@ -6,20 +6,22 @@ export abstract class OrderProcessing {
     private extraHot: boolean;
     private spoonsOfSugars: number;
     private money: number;
-    private readonly priceTable: Record<Drink, number>;
 
-    protected constructor(priceTable: Record<Drink, number>, money: number, spoonsOfSugars: number, extraHot: boolean) {
-        this.priceTable = priceTable;
+    protected constructor(
+        money: number,
+        spoonsOfSugars: number,
+        extraHot: boolean
+    ) {
         this.money = money;
         this.spoonsOfSugars = spoonsOfSugars;
         this.extraHot = extraHot;
     }
 
-    static start(priceTable: Record<Drink, number>): OrderProcessing {
-        return new InitialOrderProcessing(priceTable);
+    static start(priceTable: Record<Drink, number>, drinkMakerDriver: DrinkMakerDriver): OrderProcessing {
+        return new InitialOrderProcessing(priceTable, drinkMakerDriver);
     }
 
-    abstract makeDrink(drinkMakerDriver: DrinkMakerDriver): OrderProcessing;
+    abstract placeOrder(): OrderProcessing;
 
     abstract selectDrink(selectedDrink: Drink): OrderProcessing;
 
@@ -47,24 +49,6 @@ export abstract class OrderProcessing {
         return this.money;
     }
 
-    protected getSelectedDrinkPrice(selectedDrink: Drink): number {
-        return this.priceTable[selectedDrink];
-    }
-
-    protected makeOrderProcessingReady(selectedDrink: Drink): OrderProcessing {
-        return new ReadyOrderProcessing(
-            selectedDrink,
-            this.priceTable,
-            this.money,
-            this.spoonsOfSugars,
-            this.extraHot
-        );
-    }
-
-    protected reset(): OrderProcessing {
-        return OrderProcessing.start(this.priceTable);
-    }
-
     protected getSpoonsOfSugars(): number {
         return this.spoonsOfSugars;
     }
@@ -75,17 +59,29 @@ export abstract class OrderProcessing {
 }
 
 class InitialOrderProcessing extends OrderProcessing {
-    constructor(priceTable: Record<Drink, number>) {
-        super(priceTable, 0, 0, false);
+    private readonly drinkMakerDriver: DrinkMakerDriver;
+    private readonly priceTable: Record<Drink, number>;
+
+    constructor(priceTable: Record<Drink, number>, drinkMakerDriver: DrinkMakerDriver) {
+        super(0, 0, false);
+        this.drinkMakerDriver = drinkMakerDriver;
+        this.priceTable = priceTable;
     }
 
-    makeDrink(drinkMakerDriver: DrinkMakerDriver): OrderProcessing {
-        drinkMakerDriver.notifyUser(this.missingDrinkSelectionMessage());
+    placeOrder(): OrderProcessing {
+        this.drinkMakerDriver.notifyUser(this.missingDrinkSelectionMessage());
         return this;
     }
 
     selectDrink(selectedDrink: Drink): OrderProcessing {
-        return super.makeOrderProcessingReady(selectedDrink);
+        return new ReadyOrderProcessing(
+            selectedDrink,
+            this.priceTable,
+            this.getMoney(),
+            this.getSpoonsOfSugars(),
+            this.isExtraHot(),
+            this.drinkMakerDriver
+        );
     }
 
     selectExtraHot(): OrderProcessing {
@@ -100,20 +96,29 @@ class InitialOrderProcessing extends OrderProcessing {
 
 class ReadyOrderProcessing extends OrderProcessing {
     private selectedDrink: Drink;
+    private readonly drinkMakerDriver: DrinkMakerDriver;
+    private readonly priceTable: Record<Drink, number>;
 
-    constructor(selectedDrink: Drink, priceTable: Record<Drink, number>, money: number, spoonsOfSugars: number, extraHot: boolean) {
-        super(priceTable, money, spoonsOfSugars, extraHot);
+    constructor(selectedDrink: Drink,
+                priceTable: Record<Drink, number>,
+                money: number,
+                spoonsOfSugars: number,
+                extraHot: boolean,
+                drinkMakerDriver: DrinkMakerDriver) {
+        super(money, spoonsOfSugars, extraHot);
+        this.restrictExtraHot(selectedDrink);
         this.selectedDrink = selectedDrink;
-        this.restrictExtraHot();
+        this.drinkMakerDriver = drinkMakerDriver
+        this.priceTable = priceTable;
     }
 
-    makeDrink(drinkMakerDriver: DrinkMakerDriver): OrderProcessing {
+    placeOrder(): OrderProcessing {
         if (!this.isThereEnoughMoney()) {
-            drinkMakerDriver.notifyUser(this.missingMoneyMessage());
+            this.drinkMakerDriver.notifyUser(this.composeMissingMoneyMessage());
             return this;
         }
-        drinkMakerDriver.make(this.createOrder(this.selectedDrink));
-        return this.reset();
+        this.drinkMakerDriver.make(this.createOrder(this.selectedDrink));
+        return OrderProcessing.start(this.priceTable, this.drinkMakerDriver);
     }
 
     selectDrink(selectedDrink: Drink): OrderProcessing {
@@ -123,7 +128,7 @@ class ReadyOrderProcessing extends OrderProcessing {
 
     selectExtraHot(): OrderProcessing {
         this.setExtraHot(true);
-        this.restrictExtraHot();
+        this.restrictExtraHot(this.selectedDrink);
         return this;
     }
 
@@ -131,8 +136,8 @@ class ReadyOrderProcessing extends OrderProcessing {
         return new Order(selectedDrink, this.isExtraHot(), this.getSpoonsOfSugars())
     }
 
-    private restrictExtraHot(): void {
-        if (this.selectedDrink === Drink.OrangeJuice) {
+    private restrictExtraHot(selectedDrink: Drink): void {
+        if (selectedDrink === Drink.OrangeJuice) {
             this.setExtraHot(false);
         }
     }
@@ -141,12 +146,16 @@ class ReadyOrderProcessing extends OrderProcessing {
         return this.getMoney() >= this.getSelectedDrinkPrice(this.selectedDrink);
     }
 
-    private missingMoneyMessage(): string {
+    private composeMissingMoneyMessage(): string {
         const missingMoney = this.computeMissingMoney();
         return ` not enough money (${(missingMoney.toFixed(1))} missing)`;
     }
 
     private computeMissingMoney(): number {
         return this.getSelectedDrinkPrice(this.selectedDrink) - this.getMoney();
+    }
+
+    private getSelectedDrinkPrice(selectedDrink: Drink): number {
+        return this.priceTable[selectedDrink];
     }
 }
