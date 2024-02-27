@@ -1,7 +1,7 @@
 import {instance, mock} from "ts-mockito";
-import {CoffeeMachine} from "../src/coffee-machine";
-import {Drink} from "../src/drink";
-import {DrinkMakerDriver} from "../src/drink-maker-driver";
+import {CoffeeMachine} from "../src/core/coffee-machine";
+import {Drink} from "../src/core/drink";
+import {DrinkMakerDriver} from "../src/core/drink-maker-driver";
 import {aCoffee, aHotChocolate, anOrangeJuice, aTea} from "./helpers/order-builder";
 import {checkThat} from "./helpers/drink-maker-driver-checks";
 

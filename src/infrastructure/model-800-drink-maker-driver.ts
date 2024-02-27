@@ -1,7 +1,7 @@
 import {DrinkMaker800} from "./drink-maker-800";
-import {Drink} from "../drink";
-import {Order} from "../order";
-import {DrinkMakerDriver} from "../drink-maker-driver";
+import {Drink} from "../core/drink";
+import {Order} from "../core/order";
+import {DrinkMakerDriver} from "../core/drink-maker-driver";
 
 export class Model800DrinkMakerDriver implements DrinkMakerDriver {
     readonly drinkMaker: DrinkMaker800;

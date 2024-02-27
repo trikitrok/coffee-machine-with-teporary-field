@@ -1,6 +1,6 @@
-import {anyOfClass, anyString, capture, verify} from "ts-mockito";
-import { DrinkMakerDriver } from "../../src/drink-maker-driver";
-import { Order } from "../../src/order";
+import {anyOfClass, anyString, verify} from "ts-mockito";
+import {DrinkMakerDriver} from "../../src/core/drink-maker-driver";
+import {Order} from "../../src/core/order";
 import {captureLast} from "./ts-mockito-helper";
 
 export function checkThat(drinkMakerDriver: DrinkMakerDriver) {

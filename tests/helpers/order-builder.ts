@@ -1,5 +1,5 @@
-import { Drink } from "../../src/drink";
-import { Order } from "../../src/order";
+import {Drink} from "../../src/core/drink";
+import {Order} from "../../src/core/order";
 
 export function aCoffee(): OrderInfoBuilder {
     return new OrderInfoBuilder(Drink.Coffee);

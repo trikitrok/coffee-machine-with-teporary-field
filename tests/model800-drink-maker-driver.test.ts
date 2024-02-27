@@ -52,12 +52,10 @@ describe("Model800 driver", () => {
         });
     });
 
-    describe("notifies the user", () => {
-        it("", () => {
-            const message = "any message";
-            model800.notifyUser(message);
+    it("notifies the user", () => {
+        const message = "any message";
+        model800.notifyUser(message);
 
-            checkThat(drinkMaker).onlyReceivedCommand().was(`M:${message}`);
-        });
+        checkThat(drinkMaker).onlyReceivedCommand().was(`M:${message}`);
     });
 });
