@@ -54,7 +54,7 @@ export abstract class OrderProcessing {
   }
 }
 
-export class InitialOrderProcessing extends OrderProcessing {
+class InitialOrderProcessing extends OrderProcessing {
   private readonly drinkMakerDriver: DrinkMakerDriver;
   private readonly priceTable: Record<Drink, number>;
 
