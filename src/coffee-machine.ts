@@ -4,13 +4,11 @@ import {OrderProcessing} from "./order-processing";
 
 export class CoffeeMachine {
     private orderProcessing: OrderProcessing;
-    private readonly priceTable: Record<Drink, number>;
     private readonly drinkMakerDriver: DrinkMakerDriver;
 
     constructor(priceTable: Record<Drink, number>, drinkMakerDriver: DrinkMakerDriver) {
         this.drinkMakerDriver = drinkMakerDriver;
-        this.priceTable = priceTable;
-        this.resetOrderProcessing();
+        this.orderProcessing = new OrderProcessing(priceTable);
     }
 
     selectCoffee(): void {
@@ -42,29 +40,7 @@ export class CoffeeMachine {
     }
 
     makeDrink(): void {
-        if (!this.orderProcessing.isOrderReady()) {
-            this.drinkMakerDriver.notifyUser(this.missingDrinkSelectionMessage());
-            return;
-        }
-        if (!this.orderProcessing.isThereEnoughMoney()) {
-            this.drinkMakerDriver.notifyUser(this.missingMoneyMessage());
-            return;
-        }
-        this.drinkMakerDriver.make(this.orderProcessing.createOrder());
-        this.resetOrderProcessing();
-    }
-
-    private missingDrinkSelectionMessage(): string {
-        return "Select a drink, please";
-    }
-
-    private missingMoneyMessage(): string {
-        const missingMoney = this.orderProcessing.computeMissingMoney();
-        return ` not enough money (${(missingMoney.toFixed(1))} missing)`;
-    }
-
-    private resetOrderProcessing(): void {
-        this.orderProcessing = new OrderProcessing(this.priceTable);
+        this.orderProcessing = this.orderProcessing.placeOrder(this.drinkMakerDriver);
     }
 }
 

@@ -1,5 +1,6 @@
 import {Drink} from "./drink";
 import {Order} from "./order";
+import {DrinkMakerDriver} from "./drink-maker-driver";
 
 export class OrderProcessing {
     private readonly MAX_SPOONS_OF_SUGAR: number = 2;
@@ -16,8 +17,17 @@ export class OrderProcessing {
         this.extraHot = false;
     }
 
-    isOrderReady(): boolean {
-        return this.selectedDrink !== undefined;
+    placeOrder(drinkMakerDriver: DrinkMakerDriver): OrderProcessing {
+        if (!this.isOrderReady()) {
+            drinkMakerDriver.notifyUser(this.missingDrinkSelectionMessage());
+            return this;
+        }
+        if (!this.isThereEnoughMoney()) {
+            drinkMakerDriver.notifyUser(this.missingMoneyMessage());
+            return this;
+        }
+        drinkMakerDriver.make(this.createOrder());
+        return this.resetOrderProcessing();
     }
 
     selectDrink(selectedDrink: Drink): void {
@@ -38,23 +48,40 @@ export class OrderProcessing {
         );
     }
 
-    createOrder(): Order {
-        return new Order(this.selectedDrink, this.extraHot, this.spoonsOfSugars);
-    }
-
     addMoney(amount: number): void {
         this.money += amount;
     }
 
-    computeMissingMoney(): number {
+    private createOrder(): Order {
+        return new Order(this.selectedDrink, this.extraHot, this.spoonsOfSugars);
+    }
+
+    private computeMissingMoney(): number {
         return this.getSelectedDrinkPrice() - this.money;
     }
 
-    isThereEnoughMoney(): boolean {
+    private isThereEnoughMoney(): boolean {
         return this.money >= this.getSelectedDrinkPrice();
     }
 
     private getSelectedDrinkPrice(): number {
         return this.priceTable[this.selectedDrink];
+    }
+
+    private missingDrinkSelectionMessage(): string {
+        return "Select a drink, please";
+    }
+
+    private missingMoneyMessage(): string {
+        const missingMoney = this.computeMissingMoney();
+        return ` not enough money (${(missingMoney.toFixed(1))} missing)`;
+    }
+
+    private resetOrderProcessing(): OrderProcessing {
+        return new OrderProcessing(this.priceTable);
+    }
+
+    private isOrderReady(): boolean {
+        return this.selectedDrink !== undefined;
     }
 }
