@@ -41,7 +41,7 @@ describe("Model800 driver", () => {
                 command: "H:1:0",
             },
             {
-                title: "drink with extra hot",
+                title: "an extra hot drink",
                 order: aTea().extraHot().make(),
                 command: "Th::",
             },

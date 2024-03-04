@@ -15,35 +15,35 @@ describe("Coffee Machine", () => {
             coffeeMachine = aFreeCoffeeMachine(instance(drinkMakerDriver));
         });
 
-        it("orders a coffee", () => {
+        it("makes a coffee", () => {
             coffeeMachine.selectCoffee();
             coffeeMachine.makeDrink();
 
             checkThat(drinkMakerDriver).onlyReceivedOrder().was(aCoffee().make());
         });
 
-        it("orders a tea", () => {
+        it("makes a tea", () => {
             coffeeMachine.selectTea();
             coffeeMachine.makeDrink();
 
             checkThat(drinkMakerDriver).onlyReceivedOrder().was(aTea().make());
         });
 
-        it("orders a hot chocolate", () => {
+        it("makes a hot chocolate", () => {
             coffeeMachine.selectChocolate();
             coffeeMachine.makeDrink();
 
             checkThat(drinkMakerDriver).onlyReceivedOrder().was(aHotChocolate().make());
         });
 
-        it("orders an orange juice", () => {
+        it("makes an orange juice", () => {
             coffeeMachine.selectOrangeJuice();
             coffeeMachine.makeDrink();
 
             checkThat(drinkMakerDriver).onlyReceivedOrder().was(anOrangeJuice().make());
         });
 
-        it("orders a drink with one spoon of sugar", () => {
+        it("makes a drink with one spoon of sugar", () => {
             coffeeMachine.selectChocolate();
             coffeeMachine.addOneSpoonOfSugar();
             coffeeMachine.makeDrink();
@@ -52,7 +52,7 @@ describe("Coffee Machine", () => {
                 aHotChocolate().withSpoonsOfSugar(1).make());
         });
 
-        it("orders a drink with two spoons of sugar", () => {
+        it("makes a drink with two spoons of sugar", () => {
             coffeeMachine.selectChocolate();
             coffeeMachine.addOneSpoonOfSugar();
             coffeeMachine.addOneSpoonOfSugar();
@@ -62,7 +62,7 @@ describe("Coffee Machine", () => {
                 aHotChocolate().withSpoonsOfSugar(2).make());
         });
 
-        it("orders a drink with more than two spoons of sugar", () => {
+        it("makes a drink with more than two spoons of sugar", () => {
             coffeeMachine.selectChocolate();
             coffeeMachine.addOneSpoonOfSugar();
             coffeeMachine.addOneSpoonOfSugar();
@@ -86,7 +86,7 @@ describe("Coffee Machine", () => {
             coffeeMachine = aCoffeeMachine(priceTable, instance(drinkMakerDriver));
         });
 
-        it("does not order a coffee a new driver", () => {
+        it("does not make a coffee", () => {
             coffeeMachine.selectCoffee();
             coffeeMachine.addMoney(0.1);
             coffeeMachine.makeDrink();
@@ -94,7 +94,7 @@ describe("Coffee Machine", () => {
             checkThat(drinkMakerDriver).onlyReceivedNotification().containsMissingMoney(50);
         });
 
-        it("does not order a tea  a new driver", () => {
+        it("does not make a tea", () => {
             coffeeMachine.selectTea();
             coffeeMachine.addMoney(0.2);
             coffeeMachine.makeDrink();
@@ -102,7 +102,7 @@ describe("Coffee Machine", () => {
             checkThat(drinkMakerDriver).onlyReceivedNotification().containsMissingMoney(20);
         });
 
-        it("does not order a hot chocolate a new driver", () => {
+        it("does not make a hot chocolate", () => {
             coffeeMachine.selectChocolate();
             coffeeMachine.addMoney(0.4);
             coffeeMachine.makeDrink();
@@ -110,7 +110,7 @@ describe("Coffee Machine", () => {
             checkThat(drinkMakerDriver).onlyReceivedNotification().containsMissingMoney(10);
         });
 
-        it("does not order an orange juice a new driver", () => {
+        it("does not make an orange juice", () => {
             coffeeMachine.selectOrangeJuice();
             coffeeMachine.addMoney(0.5);
             coffeeMachine.makeDrink();
@@ -119,13 +119,13 @@ describe("Coffee Machine", () => {
         });
     });
 
-    describe("extra hot drinks", () => {
+    describe("selecting extra hot drinks", () => {
         beforeEach(() => {
             drinkMakerDriver = mock<DrinkMakerDriver>();
             coffeeMachine = aFreeCoffeeMachine(instance(drinkMakerDriver));
         });
 
-        it("order any extra hot drink", () => {
+        it("make any extra hot drink", () => {
             coffeeMachine.selectTea();
             coffeeMachine.selectExtraHot();
             coffeeMachine.makeDrink();
@@ -133,7 +133,7 @@ describe("Coffee Machine", () => {
             checkThat(drinkMakerDriver).onlyReceivedOrder().was(aTea().extraHot().make());
         });
 
-        it("order an orange juice (they can not be hot)", () => {
+        it("an orange juice can not be extra hot", () => {
             coffeeMachine.selectOrangeJuice();
             coffeeMachine.selectExtraHot();
             coffeeMachine.makeDrink();
